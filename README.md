@@ -1,58 +1,62 @@
 # NAT: Neurons Attribution Tracing
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+A causal intervention framework for analyzing what individual neurons actually *do* inside large language models.
 
-A causal intervention framework for mapping the functional roles of individual neurons in Large Language Models (LLMs). NAT identifies three distinct neuronal classes—**Amplifiers**, **Integrators**, and **Non-causal units**—by analyzing network-wide perturbation responses.
+## What this is
 
+When you poke a neuron in an LLM and it doesn't break anything, is that neuron useless? Not necessarily — the network might just be rerouting around it. When you poke another neuron and the whole thing collapses, why?
 
+NAT is a framework I built to answer these kinds of questions. It doesn't just look at whether output changes — it watches how the entire network reorganizes itself after each intervention.
 
-## 🧠 Core Idea
+## How it works
 
-Existing interpretability methods often rely on correlational activation analysis or behavioral outputs. NAT shifts the paradigm by **causally intervening on individual neurons** and tracking three signals across the full network:
+1. Find neurons that light up for structured tasks (step-by-step instructions, formatting, etc.)
+2. Suppress them one at a time
+3. Measure three things:
+   - Did the internal representation actually change?
+   - Did other neurons spike to compensate?
+   - Did other neurons go quiet?
+4. Based on these signals, each neuron falls into one of three categories:
+   - **Amplifiers**: suppress them, the network compensates like crazy, output stays fine
+   - **Integrators**: suppress them alongside amplifiers, everything falls apart
+   - **Non-causal**: they react to everything but do nothing when removed
 
-1.  **Representational Similarity** – Does suppressing this neuron change the model's internal state?
-2.  **Compensatory Activation** – Do other neurons increase activity to compensate?
-3.  **Inhibitory Response** – Do other neurons decrease activity in response?
+Tested on Pythia-160M, Pythia-410M, and LLaMA-2-7B. The pattern holds across scales, but the redundancy shrinks as models get bigger.
 
-These signals naturally separate neurons into three functional roles, revealing a structured computational organization inside LLMs.
+## Quick start
 
-## ✨ Key Features
-
-*   **Full-Network Tracking**: Measures perturbations across all layers, not just the target neuron.
-*   **Gradio Web Interface**: An interactive UI to configure and run NAT experiments without modifying code.
-*   **Cross-Scale Validation**: Tested on Pythia-160M, Pythia-410M, and LLaMA-2-7B.
-*   **Functional Portraits & PCA Atlas**: Generate and visualize neuron `portraits` ($F_n$) to map the functional topology of any transformer model.
-
-## 🚀 Quick Start
-
-### 1. Prerequisites
-
+```bash
 git clone https://github.com/FIYTP/NAT-Framework.git
 cd NAT-Framework
 pip install -r requirements.txt
-2. Prepare Task Data (JSON)
-Create a .json file with instruction prompts. For example, you can use the Stanford Alpaca dataset.
-
-json
-[
-  { "instruction": "Give three tips for staying healthy." },
-  { "instruction": "Explain the process of photosynthesis in simple terms." }
-]
-3. Launch the Interface
-bash
 python main.py
-The Gradio UI will start locally at http://127.0.0.1:7870.
+```
 
+The Gradio interface opens at `http://127.0.0.1:7870`. You'll need a local copy of LLaMA or Pythia to run experiments.
 
+## Files
 
-Radar Charts: Per-neuron functional portraits across different task subsets.
+```
+NAT-Framework/
+├── main.py           # Launch the Gradio UI
+├── nat-engine/
+│   ├── model.py      # Model loading, hooks, suppression
+│   ├── engine.py     # Core experiment logic
+│   └── viz.py        # Atlas, radar plots, heatmaps
+├── data/             # Sample task prompts (JSON)
+├── results/          # Output CSVs and figures
+└── requirements.txt
+```
 
-Response Heatmaps: Layer-wise compensatory activation and inhibitory response distributions.
+## Requirements
 
+- PyTorch, Transformers, BitsAndBytes
+- Gradio (for the UI)
+- scikit-learn, matplotlib, pandas
+- A GPU with enough VRAM for the model you're testing
 
-📧 Contact
-Chenyang Hu – Undergraduate Researcher
+## Contact
+
+Chenyang Hu
 Zhejiang Gongshang University, School of Computer Science
-Email: [2512190420@pop.zjgsu.edu.cn]
-GitHub: @FIYTP
+GitHub: [@FIYTP](https://github.com/FIYTP)
