@@ -50,17 +50,7 @@ Radar Charts: Per-neuron functional portraits across different task subsets.
 
 Response Heatmaps: Layer-wise compensatory activation and inhibitory response distributions.
 
-🤝 Citation
-If you use NAT in your research, please cite our workshop paper:
 
-bibtex
-@article{hu2026nat,
-  title={NAT: Mapping the Causal Atlas of Functional Neurons Orchestration in LLMs},
-  author={Hu, Chenyang},
-  journal={ICML 2026 Workshop on Mechanistic Interpretability},
-  year={2026},
-  note={Under review}
-}
 📧 Contact
 Chenyang Hu – Undergraduate Researcher
 Zhejiang Gongshang University, School of Computer Science
